@@ -1,0 +1,8 @@
+name: rkahn-astronauts
+services:
+- dockerfile_path: Dockerfile
+  github:
+    branch: master
+    deploy_on_push: true
+    repo: shiftyp/add-astronaut
+  name: rkahn-astronauts

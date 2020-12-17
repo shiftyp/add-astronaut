@@ -1,0 +1,8 @@
+spec:
+  name: rkahn-astronauts
+  services:
+  - dockerfile_path: Dockerfile
+    git:
+      branch: main
+      repo_clone_url: https://github.com/shiftyp/add-astronaut.git
+    name: rkahn-astronauts
