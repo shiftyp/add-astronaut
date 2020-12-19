@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"regexp"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -27,6 +29,7 @@ func min(a, b int) int {
 }
 
 func main() {
+	maxCount := 50
 	mutex := &sync.Mutex{}
 	astronauts := []astronaut{}
 	colorPattern := regexp.MustCompile(`^#[A-Fa-f0-9]{6}$`)
@@ -35,10 +38,26 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
-			astronautsJson, err := json.Marshal(astronauts);
+			var count int
+			var err error
+			var values url.Values
+
+			values, err = url.ParseQuery(r.URL.RawQuery)
+			
+			if err == nil && values.Get("count") != "" {
+				count, err = strconv.Atoi(values.Get("count"));
+			}
+
+			if count <= 0 || err != nil {
+				count = maxCount;
+			}
+
+			astronautsJson, err := json.Marshal(astronauts[0:min(len(astronauts), count)]);
+			
 			if err != nil {
 				log.Fatal(err)
 			}
+
 			fmt.Fprintf(w, string(astronautsJson))
 		case "POST":
 			decoder := json.NewDecoder(r.Body)
@@ -60,7 +79,7 @@ func main() {
 			} else {
 				mutex.Lock()
 				astro.Id = time.Now().UnixNano()
-				astronauts = append([]astronaut{astro}, astronauts[0:min(len(astronauts), 49)]...)
+				astronauts = append([]astronaut{astro}, astronauts[0:min(len(astronauts), maxCount - 1)]...)
 				mutex.Unlock()
 			}
 		}
