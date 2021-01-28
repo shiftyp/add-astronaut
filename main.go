@@ -29,7 +29,7 @@ func min(a, b int) int {
 }
 
 func main() {
-	maxCount := 50
+	maxCount := 15
 	mutex := &sync.Mutex{}
 	astronauts := []astronaut{}
 	colorPattern := regexp.MustCompile(`^#[A-Fa-f0-9]{6}$`)
